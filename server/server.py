@@ -11,7 +11,6 @@ class MainApp:
     def __init__(self):
         pub.subscribe(self.onClose, "meshtastic.connection.lost")
         pub.subscribe(self.onConnection, "meshtastic.connection.established")
-        #pub.subscribe(self.onReceivePacket, "meshtastic.receive")
         pub.subscribe(self.onReceiveText, "meshtastic.receive.text")
         
         ports = meshtastic.util.findPorts()
@@ -20,9 +19,6 @@ class MainApp:
         self.client = SerialInterface(devPath=port)
 
         self.init = False
-
-    # def onReceivePacket(self, packet, interface):
-    #     logger.info(f"Получен пакет: {packet}")
 
     def onReceiveText(self, packet, interface):
         user_origin: str = packet['fromId']
@@ -45,10 +41,8 @@ class MainApp:
     def processCommands(self, payload: str, origin: str, dest: str):
         try:
             args = payload.split(' ')
-            if args[0].startswith('/'):
-                logger.info(f'Полученна команда {args[0]}')
-                return 
-            
+            if not args[0].startswith('/'): return
+            logger.info(f'Полученна команда {args[0]}')
             match(args[0]):
                 case '/ping':
                     self.client.sendText(
