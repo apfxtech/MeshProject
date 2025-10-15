@@ -1,20 +1,12 @@
+from log import SingletonLogger
 import asyncio
 import meshtastic
 from meshtastic.serial_interface import SerialInterface
 from pubsub import pub
-import logging
 import sys
 
-logging.root.setLevel(logging.NOTSET)
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(name)s [%(levelname)s] %(message)s",
-    datefmt='%d-%b-%y %H:%M:%S',
-    force=True,
-    handlers=[logging.FileHandler("server.log")]
-)
-
-logger = logging.getLogger("main")
+SingletonLogger().clear()
+logger = SingletonLogger().get()
 
 class MainApp:
     def __init__(self):
@@ -24,7 +16,7 @@ class MainApp:
         pub.subscribe(self.onReceiveText, "meshtastic.receive.text")
         
         ports = meshtastic.util.findPorts()
-        if ports <= 0: self.close()
+        if len(ports) <= 0: self.close()
         self.ports, port = ports, ports[0]
         self.client = SerialInterface(devPath=port)
 
@@ -34,15 +26,16 @@ class MainApp:
     def onReceiveText(self, packet, interface):
         logger.debug(f"Получено сообщение: {packet}")
     
-    def onConnection(self, client, topic=pub.AUTO_TOPIC):
+    def onConnection(self, interface, topic=pub.AUTO_TOPIC):
         logger.info(f"Соединение установлено")
 
-    def onClose(self, client, topic=pub.AUTO_TOPIC):
+    def onClose(self, interface, topic=pub.AUTO_TOPIC):
         logger.warning(f"Соединение потерянно")
         self.close()
 
     def close(self):
         logger.warning(f"Закрытие программы")
+        self.client.close()
         sys.exit(1)
 
 async def main():
