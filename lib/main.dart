@@ -48,8 +48,8 @@ Future<void> _initAsync() async {
     await db.createTables(allSchemas);
     
     nodes.NodeRepository.init(db);
-    chats.ChatsRepository.setDb(db);
-    settings.SettingsRepository.setDb(db);
+    chats.ChatsRepository.init(db);
+    settings.SettingsRepository.init(db);
     
     await FlutterBluePlus.setLogLevel(LogLevel.none);
     await Future.delayed(Duration(seconds: 1));

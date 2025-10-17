@@ -61,7 +61,7 @@ const TableSchema messagesSchema = TableSchema(
 class ChatsRepository {
   static late ToStore _db;
 
-  static void setDb(ToStore db) {
+  static void init(ToStore db) {
     _db = db;
   }
 

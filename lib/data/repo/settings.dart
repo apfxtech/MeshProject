@@ -25,7 +25,7 @@ const TableSchema settingsSchema = TableSchema(
 class SettingsRepository {
   static late ToStore _db;
 
-  static void setDb(ToStore db) {
+  static void init(ToStore db) {
     _db = db;
   }
 
