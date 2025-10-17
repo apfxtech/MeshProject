@@ -1,0 +1,489 @@
+{
+    "gateway_distribution": [
+        {
+            "gateway_id": "!fa98ccfc",
+            "percentage_of_total": 7.94,
+            "success_rate": 99.97,
+            "successful_packets": 7437,
+            "total_packets": 7439
+        },
+        {
+            "gateway_id": "!fa68e0d4",
+            "percentage_of_total": 6.63,
+            "success_rate": 99.9,
+            "successful_packets": 6202,
+            "total_packets": 6208
+        },
+        {
+            "gateway_id": "!9eecb198",
+            "percentage_of_total": 4.26,
+            "success_rate": 100.0,
+            "successful_packets": 3993,
+            "total_packets": 3993
+        },
+        {
+            "gateway_id": "!a0cbc1e8",
+            "percentage_of_total": 3.72,
+            "success_rate": 100.0,
+            "successful_packets": 3487,
+            "total_packets": 3487
+        },
+        {
+            "gateway_id": "!f98db090",
+            "percentage_of_total": 3.54,
+            "success_rate": 98.88,
+            "successful_packets": 3275,
+            "total_packets": 3312
+        },
+        {
+            "gateway_id": "!bba833f4",
+            "percentage_of_total": 3.53,
+            "success_rate": 100.0,
+            "successful_packets": 3308,
+            "total_packets": 3308
+        },
+        {
+            "gateway_id": "!5caf61f1",
+            "percentage_of_total": 3.51,
+            "success_rate": 100.0,
+            "successful_packets": 3291,
+            "total_packets": 3291
+        },
+        {
+            "gateway_id": "!57eb6b28",
+            "percentage_of_total": 3.41,
+            "success_rate": 100.0,
+            "successful_packets": 3193,
+            "total_packets": 3193
+        },
+        {
+            "gateway_id": "!9e9e1e60",
+            "percentage_of_total": 3.21,
+            "success_rate": 100.0,
+            "successful_packets": 3007,
+            "total_packets": 3007
+        },
+        {
+            "gateway_id": "!1309d640",
+            "percentage_of_total": 3.21,
+            "success_rate": 100.0,
+            "successful_packets": 3003,
+            "total_packets": 3003
+        },
+        {
+            "gateway_id": "!9eed0ca8",
+            "percentage_of_total": 3.19,
+            "success_rate": 100.0,
+            "successful_packets": 2986,
+            "total_packets": 2986
+        },
+        {
+            "gateway_id": "!29a36f94",
+            "percentage_of_total": 3.1,
+            "success_rate": 100.0,
+            "successful_packets": 2907,
+            "total_packets": 2907
+        },
+        {
+            "gateway_id": "!433a9274",
+            "percentage_of_total": 2.97,
+            "success_rate": 99.86,
+            "successful_packets": 2781,
+            "total_packets": 2785
+        },
+        {
+            "gateway_id": "!1309db84",
+            "percentage_of_total": 2.94,
+            "success_rate": 100.0,
+            "successful_packets": 2757,
+            "total_packets": 2757
+        },
+        {
+            "gateway_id": "!08ad1914",
+            "percentage_of_total": 2.89,
+            "success_rate": 100.0,
+            "successful_packets": 2711,
+            "total_packets": 2711
+        },
+        {
+            "gateway_id": "!1309d858",
+            "percentage_of_total": 2.89,
+            "success_rate": 97.82,
+            "successful_packets": 2648,
+            "total_packets": 2707
+        },
+        {
+            "gateway_id": "!9ee9a9d4",
+            "percentage_of_total": 2.78,
+            "success_rate": 100.0,
+            "successful_packets": 2606,
+            "total_packets": 2606
+        },
+        {
+            "gateway_id": "!1dcd43fc",
+            "percentage_of_total": 2.69,
+            "success_rate": 100.0,
+            "successful_packets": 2523,
+            "total_packets": 2523
+        },
+        {
+            "gateway_id": "!9ee99fcc",
+            "percentage_of_total": 2.55,
+            "success_rate": 100.0,
+            "successful_packets": 2390,
+            "total_packets": 2390
+        },
+        {
+            "gateway_id": "!433c9e98",
+            "percentage_of_total": 2.44,
+            "success_rate": 100.0,
+            "successful_packets": 2289,
+            "total_packets": 2289
+        }
+    ],
+    "node_statistics": {
+        "active_nodes": 558,
+        "activity_distribution": {
+            "inactive": 1,
+            "lightly_active": 135,
+            "moderately_active": 223,
+            "very_active": 200
+        },
+        "activity_rate": 99.82,
+        "inactive_nodes": 1,
+        "total_nodes": 559
+    },
+    "packet_statistics": {
+        "average_payload_size": 40.56,
+        "failed_packets": 167,
+        "success_rate": 99.82,
+        "successful_packets": 93511,
+        "total_packets": 93678
+    },
+    "packet_types": [
+        {
+            "count": 36650,
+            "percentage": 39.13,
+            "portnum_name": "POSITION_APP"
+        },
+        {
+            "count": 24769,
+            "percentage": 26.44,
+            "portnum_name": "NODEINFO_APP"
+        },
+        {
+            "count": 19791,
+            "percentage": 21.13,
+            "portnum_name": "TELEMETRY_APP"
+        },
+        {
+            "count": 3451,
+            "percentage": 3.68,
+            "portnum_name": "TEXT_MESSAGE_APP"
+        },
+        {
+            "count": 3080,
+            "percentage": 3.29,
+            "portnum_name": "TRACEROUTE_APP"
+        },
+        {
+            "count": 2200,
+            "percentage": 2.35,
+            "portnum_name": "UNKNOWN_APP"
+        },
+        {
+            "count": 1593,
+            "percentage": 1.7,
+            "portnum_name": "ROUTING_APP"
+        },
+        {
+            "count": 1320,
+            "percentage": 1.41,
+            "portnum_name": "MAP_REPORT_APP"
+        },
+        {
+            "count": 668,
+            "percentage": 0.71,
+            "portnum_name": "STORE_FORWARD_APP"
+        },
+        {
+            "count": 75,
+            "percentage": 0.08,
+            "portnum_name": "NEIGHBORINFO_APP"
+        },
+        {
+            "count": 68,
+            "percentage": 0.07,
+            "portnum_name": "RANGE_TEST_APP"
+        },
+        {
+            "count": 2,
+            "percentage": 0.0,
+            "portnum_name": "TEXT_MESSAGE_COMPRESSED_APP"
+        },
+        {
+            "count": 1,
+            "percentage": 0.0,
+            "portnum_name": "SIMULATOR_APP"
+        }
+    ],
+    "signal_quality": {
+        "avg_rssi": -90.65,
+        "avg_snr": -4.03,
+        "rssi_distribution": {
+            "excellent": 33265,
+            "fair": 3503,
+            "good": 3190,
+            "poor": 53710
+        },
+        "snr_distribution": {
+            "excellent": 3452,
+            "fair": 5434,
+            "good": 18707,
+            "poor": 66075
+        },
+        "total_measurements": 93668
+    },
+    "temporal_patterns": {
+        "hourly_breakdown": [
+            {
+                "hour": 0,
+                "success_rate": 99.63,
+                "successful_packets": 2935,
+                "total_packets": 2946
+            },
+            {
+                "hour": 1,
+                "success_rate": 99.91,
+                "successful_packets": 3261,
+                "total_packets": 3264
+            },
+            {
+                "hour": 2,
+                "success_rate": 99.62,
+                "successful_packets": 2883,
+                "total_packets": 2894
+            },
+            {
+                "hour": 3,
+                "success_rate": 99.51,
+                "successful_packets": 3244,
+                "total_packets": 3260
+            },
+            {
+                "hour": 4,
+                "success_rate": 99.52,
+                "successful_packets": 3098,
+                "total_packets": 3113
+            },
+            {
+                "hour": 5,
+                "success_rate": 99.84,
+                "successful_packets": 3637,
+                "total_packets": 3643
+            },
+            {
+                "hour": 6,
+                "success_rate": 99.89,
+                "successful_packets": 4349,
+                "total_packets": 4354
+            },
+            {
+                "hour": 7,
+                "success_rate": 99.94,
+                "successful_packets": 5184,
+                "total_packets": 5187
+            },
+            {
+                "hour": 8,
+                "success_rate": 99.69,
+                "successful_packets": 4859,
+                "total_packets": 4874
+            },
+            {
+                "hour": 9,
+                "success_rate": 99.92,
+                "successful_packets": 4739,
+                "total_packets": 4743
+            },
+            {
+                "hour": 10,
+                "success_rate": 99.81,
+                "successful_packets": 4633,
+                "total_packets": 4642
+            },
+            {
+                "hour": 11,
+                "success_rate": 99.82,
+                "successful_packets": 4503,
+                "total_packets": 4511
+            },
+            {
+                "hour": 12,
+                "success_rate": 99.67,
+                "successful_packets": 4599,
+                "total_packets": 4614
+            },
+            {
+                "hour": 13,
+                "success_rate": 99.76,
+                "successful_packets": 4617,
+                "total_packets": 4628
+            },
+            {
+                "hour": 14,
+                "success_rate": 99.89,
+                "successful_packets": 3617,
+                "total_packets": 3621
+            },
+            {
+                "hour": 15,
+                "success_rate": 99.95,
+                "successful_packets": 3700,
+                "total_packets": 3702
+            },
+            {
+                "hour": 16,
+                "success_rate": 99.77,
+                "successful_packets": 4367,
+                "total_packets": 4377
+            },
+            {
+                "hour": 17,
+                "success_rate": 100.0,
+                "successful_packets": 4447,
+                "total_packets": 4447
+            },
+            {
+                "hour": 18,
+                "success_rate": 99.86,
+                "successful_packets": 4361,
+                "total_packets": 4367
+            },
+            {
+                "hour": 19,
+                "success_rate": 99.92,
+                "successful_packets": 3618,
+                "total_packets": 3621
+            },
+            {
+                "hour": 20,
+                "success_rate": 99.94,
+                "successful_packets": 3268,
+                "total_packets": 3270
+            },
+            {
+                "hour": 21,
+                "success_rate": 99.94,
+                "successful_packets": 3211,
+                "total_packets": 3213
+            },
+            {
+                "hour": 22,
+                "success_rate": 99.81,
+                "successful_packets": 3082,
+                "total_packets": 3088
+            },
+            {
+                "hour": 23,
+                "success_rate": 100.0,
+                "successful_packets": 3299,
+                "total_packets": 3299
+            }
+        ],
+        "peak_hour": 7,
+        "quiet_hour": 2
+    },
+    "top_nodes": [
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "OtradnoeMSK01",
+            "hw_model": "TLORA_V2_1_1P6",
+            "last_seen": 1760633511.207591,
+            "node_id": 4188959592,
+            "packet_count": 3520
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "GenSys-Pol30",
+            "hw_model": "TLORA_T3_S3",
+            "last_seen": 1760633529.5844884,
+            "node_id": 1244059364,
+            "packet_count": 3216
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "Orbis_868_MS",
+            "hw_model": "TRACKER_T1000_E",
+            "last_seen": 1760633552.928754,
+            "node_id": 2631014740,
+            "packet_count": 2645
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "MS svk 883c",
+            "hw_model": "TBEAM",
+            "last_seen": 1760633483.9393218,
+            "node_id": 3291514940,
+            "packet_count": 2632
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "@fily_d #MS #ЗАО",
+            "hw_model": "THINKNODE_M1",
+            "last_seen": 1760632924.3362389,
+            "node_id": 2645071190,
+            "packet_count": 1754
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "Price ML 868 (MS)",
+            "hw_model": "DIY_V1",
+            "last_seen": 1760632956.6600416,
+            "node_id": 698576788,
+            "packet_count": 1705
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "TPN_KOTA MS",
+            "hw_model": "HELTEC_HT62",
+            "last_seen": 1760633064.0774927,
+            "node_id": 3735929054,
+            "packet_count": 1350
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "Hutora DT28 (MS)",
+            "hw_model": "HELTEC_V3",
+            "last_seen": 1760633534.901948,
+            "node_id": 2666335400,
+            "packet_count": 1342
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "SYSXX W8",
+            "hw_model": "HELTEC_V3",
+            "last_seen": 1760633500.4095385,
+            "node_id": 2666334216,
+            "packet_count": 1226
+        },
+        {
+            "avg_rssi": null,
+            "avg_snr": null,
+            "display_name": "MSH-U6K1-8(MS)",
+            "hw_model": "HELTEC_V3",
+            "last_seen": 1760633228.5863643,
+            "node_id": 2666114180,
+            "packet_count": 1186
+        }
+    ]
+}

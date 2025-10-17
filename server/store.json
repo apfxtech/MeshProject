@@ -1,0 +1,10 @@
+{
+  "!9ea0cf08": {
+    "history": [],
+    "config": {
+      "model": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+      "api_key": "sk-ewl70MJkW1XLn2BYqNE9PlWuLm9gT0eY",
+      "base_url": "https://api.proxyapi.ru/openrouter/v1"
+    }
+  }
+}
