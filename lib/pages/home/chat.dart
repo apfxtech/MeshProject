@@ -5,8 +5,6 @@ import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart';
 import '../../services/meshtastic.dart';
 import '../../services/providers/mesh.dart';
 import '../../services/providers/openai.dart';
-import '../../data/models/chat.dart';
-import '../../data/models/message.dart';
 import '../../data/repo/chats.dart';
 
 class ChatView extends StatefulWidget {

@@ -9,7 +9,6 @@ import '../../data/models/chat.dart';
 import '../../data/models/contact.dart';
 import '../../data/repo/chats.dart';
 
-import '../../services/life.dart';
 import '../../services/meshtastic.dart';
 import '../../services/notification.dart';
 import '../../services/providers/mesh.dart';
@@ -310,10 +309,7 @@ Future<void> handleIncomingMessage(
       date: DateTime.now(),
       hops: 0,
     );
-    final lifeService = AppLifeService(); 
-    if (!lifeService.isActive){
-      await NotificationService.sendTextNotification(title: senderName.toString(), body: packet.textMessage.toString());
-    }
+    await NotificationService.sendTextNotification(title: senderName.toString(), body: packet.textMessage.toString());
     await ChatsRepository.messages(chat.id).add(newMessage);
     MeshtasticProvider.notifyNewMessage(chat.id);
   }

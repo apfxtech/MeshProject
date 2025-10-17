@@ -15,7 +15,6 @@ import './data/repo/nodes.dart' as nodes;
 import './data/repo/chats.dart' as chats;
 import './data/repo/settings.dart' as settings;
 import './services/notification.dart';
-import './services/life.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +31,6 @@ class AegisApp extends StatefulWidget {
 class _AegisAppState extends State<AegisApp> {
   bool _initialized = false;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-  late final AppLifeService _lifeService;
 
 Future<void> _initAsync() async {
   try {
@@ -65,26 +63,11 @@ Future<void> _initAsync() async {
   @override
   void initState() {
     super.initState();
-    _lifeService = AppLifeService();
     _initAsync();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _lifeService.init(
-        navigatorKey: _navigatorKey,
-        onResume: () {
-          debugPrint('App resumed');
-          // Add any resume logic here
-        },
-        onPause: () {
-          debugPrint('App paused');
-          // Add any pause logic here
-        },
-      );
-    });
   }
 
   @override
   void dispose() {
-    _lifeService.dispose();
     super.dispose();
   }
 
