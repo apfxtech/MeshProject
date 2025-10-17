@@ -1,9 +1,7 @@
-// lib/data/repo/nodes.dart (обновленный с обработкой String для lastHeard)
+// lib/data/repo/nodes.dart
 import 'dart:async';
-
 import 'package:tostore/tostore.dart';
-
-import '../../data/models/node.dart'; // Импорт модели Node (предполагаем путь)
+import '../../data/models/node.dart';
 
 const TableSchema nodesSchema = TableSchema(
   name: 'nodes',
@@ -46,11 +44,10 @@ const TableSchema nodesSchema = TableSchema(
 class NodeRepository {
   static late ToStore _db;
 
-  static void setDb(ToStore db) {
+  static void init(ToStore db) {
     _db = db;
   }
 
-  // Метод для преобразования Map из JSON-формата в формат для БД (конверт lastHeard в DateTime)
   static Map<String, dynamic> _toDbMap(Map<String, dynamic> jsonMap) {
     final dbMap = Map<String, dynamic>.from(jsonMap);
     if (dbMap['lastHeard'] != null) {
@@ -62,7 +59,6 @@ class NodeRepository {
     return dbMap;
   }
 
-  // Метод для преобразования Map из БД в JSON-формат (конверт lastHeard в unix seconds)
   static Map<String, dynamic> _toJsonMap(Map<String, dynamic> dbMap) {
     final jsonMap = Map<String, dynamic>.from(dbMap);
     if (jsonMap['lastHeard'] != null) {
@@ -77,7 +73,6 @@ class NodeRepository {
     return jsonMap;
   }
 
-  // Добавление/обновление ноды (автоматически обновит, если существует)
   static Future<void> add(Node node) async {
     final map = _toDbMap(node.toJson());
     final query = _db.query('nodes').where('nodeNum', '=', node.nodeNum);
@@ -89,18 +84,15 @@ class NodeRepository {
     }
   }
 
-  // Обновление существующей ноды (если не существует, ничего не сделает)
   static Future<void> update(Node node) async {
     final map = _toDbMap(node.toJson());
     await _db.update('nodes', map).where('nodeNum', '=', node.nodeNum);
   }
 
-  // Удаление ноды по nodeNum
   static Future<void> remove(int nodeNum) async {
     await _db.delete('nodes').where('nodeNum', '=', nodeNum);
   }
 
-  // Получение ноды по nodeNum (возвращает null, если не найдена)
   static Future<Node?> get(int nodeNum) async {
     final query = _db.query('nodes').where('nodeNum', '=', nodeNum).limit(1);
     final result = await query;
@@ -112,7 +104,6 @@ class NodeRepository {
     return Node.fromJson(jsonMap);
   }
 
-  // Получение всех нод
   static Future<List<Node>> getAll() async {
     final query = _db.query('nodes');
     final result = await query;

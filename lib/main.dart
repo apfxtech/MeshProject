@@ -47,7 +47,7 @@ Future<void> _initAsync() async {
     await db.initialize();
     await db.createTables(allSchemas);
     
-    nodes.NodeRepository.setDb(db);
+    nodes.NodeRepository.init(db);
     chats.ChatsRepository.setDb(db);
     settings.SettingsRepository.setDb(db);
     

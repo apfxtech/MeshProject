@@ -21,18 +21,25 @@ class Neighbor {
   }
 
   Map<String, dynamic> toJson() => {
-    'avg_rssi': avgRssi,
-    'avg_snr': avgSnr,
-    'neighbor_id': neighborId,
-    'packet_count': packetCount,
-    'traceroute_count': tracerouteCount,
-  };
+        'avg_rssi': avgRssi,
+        'avg_snr': avgSnr,
+        'neighbor_id': neighborId,
+        'packet_count': packetCount,
+        'traceroute_count': tracerouteCount,
+      };
 
   final double avgRssi;
   final double avgSnr;
   final int neighborId;
   final int packetCount;
   final int tracerouteCount;
+}
+
+List<Neighbor>? parseNeighbors(dynamic value) {
+  if (value == null || value is! List) return null;
+  return value
+      .map((e) => Neighbor.fromJson(e as Map<String, dynamic>))
+      .toList();
 }
 
 class Node {
@@ -69,13 +76,14 @@ class Node {
     this.satsInView,
     this.timestamp,
     this.timestampStr,
+    this.isReceived,
   });
 
   factory Node.fromJson(Map<String, dynamic> json) {
     return Node(
-      nodeNum: parseInt(json['nodeNum']) ?? 0,
-      longName: json['longName'] as String?,
-      shortName: json['shortName'] as String?,
+      nodeNum: parseInt(json['nodeNum'] ?? json['node_id']) ?? 0,
+      longName: json['longName'] ?? json['long_name'] as String?,
+      shortName: json['shortName'] ?? json['short_name'] as String?,
       hwModel: parseInt(json['hwModel']) != null
           ? HardwareModel.valueOf(parseInt(json['hwModel'])!)
           : null,
@@ -97,38 +105,31 @@ class Node {
             )
           : null,
       snr: parseDouble(json['snr']) ?? 0.0,
+      isReceived: parseBool(json['isRx']),
+      ageHours: parseDouble(json['age_hours']),
+      avgSnr: parseDouble(json['avg_snr']),
+      directNeighbors: parseInt(json['direct_neighbors']),
+      displayName: json['display_name'] as String?,
+      hexId: json['hex_id'] as String?,
+      hwModelStr: json['hw_model'] as String?,
+      lastSeenNetwork: json['last_seen_network'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (parseInt(json['last_seen_network']) ?? 0) * 1000,
+            )
+          : null,
+      neighbors: parseNeighbors(json['neighbors']),
+      packetCount: parseInt(json['packet_count']),
+      precisionBits: parseInt(json['precision_bits']),
+      precisionMeters: parseDouble(json['precision_meters']),
+      primaryChannel: json['primary_channel'] as String?,
+      roleStr: json['role_str'] as String?,
+      satsInView: parseInt(json['sats_in_view']),
+      timestamp: parseDouble(json['timestamp']),
+      timestampStr: json['timestamp_str'] as String?,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'nodeNum': nodeNum,
-    'longName': longName,
-    'shortName': shortName,
-    'hwModel': hwModel?.value,
-    'isLicensed': isLicensed,
-    'role': role?.value,
-    'latitude': latitude,
-    'longitude': longitude,
-    'altitude': altitude,
-    'batteryLevel': batteryLevel,
-    'voltage': voltage,
-    'channelUtilization': channelUtilization,
-    'airUtilTx': airUtilTx,
-    'channel': channel,
-    'lastHeard': lastHeard != null
-        ? (lastHeard!.millisecondsSinceEpoch ~/ 1000)
-        : null,
-    'snr': snr,
-  };
-
   factory Node.fromStats(Map<String, dynamic> json) {
-    List<Neighbor>? parseNeighbors(dynamic value) {
-      if (value == null || value is! List) return null;
-      return value
-          .map((e) => Neighbor.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-
     return Node(
       nodeNum: parseInt(json['node_id']) ?? 0,
       longName: json['long_name'] as String?,
@@ -162,35 +163,50 @@ class Node {
       satsInView: parseInt(json['sats_in_view']),
       timestamp: parseDouble(json['timestamp']),
       timestampStr: json['timestamp_str'] as String?,
+      isReceived: null,
     );
   }
 
-  Map<String, dynamic> toStats() => {
-    'age_hours': ageHours,
-    'altitude': altitude,
-    'avg_snr': avgSnr,
-    'direct_neighbors': directNeighbors,
-    'display_name': displayName,
-    'hex_id': hexId,
-    'hw_model': hwModelStr,
-    'last_seen_network': lastSeenNetwork != null
-        ? (lastSeenNetwork!.millisecondsSinceEpoch / 1000)
-        : null,
-    'latitude': latitude,
-    'long_name': longName,
-    'longitude': longitude,
-    'neighbors': neighbors?.map((e) => e.toJson()).toList(),
-    'node_id': nodeNum,
-    'packet_count': packetCount,
-    'precision_bits': precisionBits,
-    'precision_meters': precisionMeters,
-    'primary_channel': primaryChannel,
-    'role': roleStr,
-    'sats_in_view': satsInView,
-    'short_name': shortName,
-    'timestamp': timestamp,
-    'timestamp_str': timestampStr,
-  };
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['nodeNum'] = nodeNum;
+    if (longName != null) map['longName'] = longName;
+    if (shortName != null) map['shortName'] = shortName;
+    if (hwModel != null) map['hwModel'] = hwModel!.value;
+    map['isLicensed'] = isLicensed;
+    if (role != null) map['role'] = role!.value;
+    if (latitude != null) map['latitude'] = latitude;
+    if (longitude != null) map['longitude'] = longitude;
+    if (altitude != null) map['altitude'] = altitude;
+    if (batteryLevel != null) map['batteryLevel'] = batteryLevel;
+    if (voltage != null) map['voltage'] = voltage;
+    if (channelUtilization != null) map['channelUtilization'] = channelUtilization;
+    if (airUtilTx != null) map['airUtilTx'] = airUtilTx;
+    map['channel'] = channel;
+    if (lastHeard != null) map['lastHeard'] = lastHeard!.millisecondsSinceEpoch ~/ 1000;
+    map['snr'] = snr;
+    if (ageHours != null) map['age_hours'] = ageHours;
+    if (avgSnr != null) map['avg_snr'] = avgSnr;
+    if (directNeighbors != null) map['direct_neighbors'] = directNeighbors;
+    if (displayName != null) map['display_name'] = displayName;
+    if (hexId != null) map['hex_id'] = hexId;
+    if (hwModelStr != null) map['hw_model'] = hwModelStr;
+    if (lastSeenNetwork != null) map['last_seen_network'] = lastSeenNetwork!.millisecondsSinceEpoch ~/ 1000;
+    if (longName != null) map['long_name'] = longName;
+    if (neighbors != null) map['neighbors'] = neighbors!.map((e) => e.toJson()).toList();
+    map['node_id'] = nodeNum;
+    if (packetCount != null) map['packet_count'] = packetCount;
+    if (precisionBits != null) map['precision_bits'] = precisionBits;
+    if (precisionMeters != null) map['precision_meters'] = precisionMeters;
+    if (primaryChannel != null) map['primary_channel'] = primaryChannel;
+    if (roleStr != null) map['role_str'] = roleStr;
+    if (satsInView != null) map['sats_in_view'] = satsInView;
+    if (shortName != null) map['short_name'] = shortName;
+    if (timestamp != null) map['timestamp'] = timestamp;
+    if (timestampStr != null) map['timestamp_str'] = timestampStr;
+    if (isReceived != null) map['isRx'] = isReceived;
+    return map;
+  }
 
   final int nodeNum;
   final String? longName;
@@ -225,4 +241,6 @@ class Node {
   final int? satsInView;
   final double? timestamp;
   final String? timestampStr;
+
+  final bool? isReceived;
 }
