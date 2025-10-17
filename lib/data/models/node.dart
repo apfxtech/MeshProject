@@ -1,4 +1,5 @@
 import '../../services/meshtastic.dart';
+import 'parser.dart';
 
 class Neighbor {
   Neighbor({
@@ -10,21 +11,6 @@ class Neighbor {
   });
 
   factory Neighbor.fromJson(Map<String, dynamic> json) {
-    int? parseInt(dynamic value) {
-      if (value == null) return null;
-      if (value is int) return value;
-      if (value is String) return int.tryParse(value);
-      return null;
-    }
-
-    double? parseDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is double) return value;
-      if (value is int) return value.toDouble();
-      if (value is String) return double.tryParse(value);
-      return null;
-    }
-
     return Neighbor(
       avgRssi: parseDouble(json['avg_rssi']) ?? 0.0,
       avgSnr: parseDouble(json['avg_snr']) ?? 0.0,
@@ -35,12 +21,12 @@ class Neighbor {
   }
 
   Map<String, dynamic> toJson() => {
-        'avg_rssi': avgRssi,
-        'avg_snr': avgSnr,
-        'neighbor_id': neighborId,
-        'packet_count': packetCount,
-        'traceroute_count': tracerouteCount,
-      };
+    'avg_rssi': avgRssi,
+    'avg_snr': avgSnr,
+    'neighbor_id': neighborId,
+    'packet_count': packetCount,
+    'traceroute_count': tracerouteCount,
+  };
 
   final double avgRssi;
   final double avgSnr;
@@ -86,35 +72,17 @@ class Node {
   });
 
   factory Node.fromJson(Map<String, dynamic> json) {
-    int? parseInt(dynamic value) {
-      if (value == null) return null;
-      if (value is int) return value;
-      if (value is String) return int.tryParse(value);
-      return null;
-    }
-
-    double? parseDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is double) return value;
-      if (value is int) return value.toDouble();
-      if (value is String) return double.tryParse(value);
-      return null;
-    }
-
-    bool parseBool(dynamic value) {
-      if (value is bool) return value;
-      if (value is int) return value != 0;
-      if (value is String) return value.toLowerCase() == 'true' || value == '1';
-      return false;
-    }
-
     return Node(
       nodeNum: parseInt(json['nodeNum']) ?? 0,
       longName: json['longName'] as String?,
       shortName: json['shortName'] as String?,
-      hwModel: parseInt(json['hwModel']) != null ? HardwareModel.valueOf(parseInt(json['hwModel'])!) : null,
+      hwModel: parseInt(json['hwModel']) != null
+          ? HardwareModel.valueOf(parseInt(json['hwModel'])!)
+          : null,
       isLicensed: parseBool(json['isLicensed']),
-      role: parseInt(json['role']) != null ? Config_DeviceConfig_Role.valueOf(parseInt(json['role'])!) : null,
+      role: parseInt(json['role']) != null
+          ? Config_DeviceConfig_Role.valueOf(parseInt(json['role'])!)
+          : null,
       latitude: parseDouble(json['latitude']),
       longitude: parseDouble(json['longitude']),
       altitude: parseInt(json['altitude']),
@@ -124,52 +92,41 @@ class Node {
       airUtilTx: parseDouble(json['airUtilTx']),
       channel: parseInt(json['channel']) ?? 0,
       lastHeard: json['lastHeard'] != null
-          ? DateTime.fromMillisecondsSinceEpoch((parseInt(json['lastHeard']) ?? 0) * 1000)
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (parseInt(json['lastHeard']) ?? 0) * 1000,
+            )
           : null,
       snr: parseDouble(json['snr']) ?? 0.0,
     );
   }
 
-  factory Node.fromStatsJson(Map<String, dynamic> json) {
-    int? parseInt(dynamic value) {
-      if (value == null) return null;
-      if (value is int) return value;
-      if (value is String) return int.tryParse(value);
-      return null;
-    }
+  Map<String, dynamic> toJson() => {
+    'nodeNum': nodeNum,
+    'longName': longName,
+    'shortName': shortName,
+    'hwModel': hwModel?.value,
+    'isLicensed': isLicensed,
+    'role': role?.value,
+    'latitude': latitude,
+    'longitude': longitude,
+    'altitude': altitude,
+    'batteryLevel': batteryLevel,
+    'voltage': voltage,
+    'channelUtilization': channelUtilization,
+    'airUtilTx': airUtilTx,
+    'channel': channel,
+    'lastHeard': lastHeard != null
+        ? (lastHeard!.millisecondsSinceEpoch ~/ 1000)
+        : null,
+    'snr': snr,
+  };
 
-    double? parseDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is double) return value;
-      if (value is int) return value.toDouble();
-      if (value is String) return double.tryParse(value);
-      return null;
-    }
-
-    // bool parseBool(dynamic value) {
-    //   if (value is bool) return value;
-    //   if (value is int) return value != 0;
-    //   if (value is String) return value.toLowerCase() == 'true' || value == '1';
-    //   return false;
-    // }
-
-    DateTime? parseDateTime(dynamic value) {
-      if (value == null) return null;
-      if (value is double) {
-        return DateTime.fromMillisecondsSinceEpoch((value * 1000).toInt());
-      }
-      if (value is int) {
-        return DateTime.fromMillisecondsSinceEpoch(value * 1000);
-      }
-      if (value is String) {
-        return DateTime.tryParse(value);
-      }
-      return null;
-    }
-
+  factory Node.fromStats(Map<String, dynamic> json) {
     List<Neighbor>? parseNeighbors(dynamic value) {
       if (value == null || value is! List) return null;
-      return value.map((e) => Neighbor.fromJson(e as Map<String, dynamic>)).toList();
+      return value
+          .map((e) => Neighbor.fromJson(e as Map<String, dynamic>))
+          .toList();
     }
 
     return Node(
@@ -208,49 +165,32 @@ class Node {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'nodeNum': nodeNum,
-        'longName': longName,
-        'shortName': shortName,
-        'hwModel': hwModel?.value,
-        'isLicensed': isLicensed,
-        'role': role?.value,
-        'latitude': latitude,
-        'longitude': longitude,
-        'altitude': altitude,
-        'batteryLevel': batteryLevel,
-        'voltage': voltage,
-        'channelUtilization': channelUtilization,
-        'airUtilTx': airUtilTx,
-        'channel': channel,
-        'lastHeard': lastHeard != null ? (lastHeard!.millisecondsSinceEpoch ~/ 1000) : null,
-        'snr': snr,
-      };
-
-  Map<String, dynamic> toStatsJson() => {
-        'age_hours': ageHours,
-        'altitude': altitude,
-        'avg_snr': avgSnr,
-        'direct_neighbors': directNeighbors,
-        'display_name': displayName,
-        'hex_id': hexId,
-        'hw_model': hwModelStr,
-        'last_seen_network': lastSeenNetwork != null ? (lastSeenNetwork!.millisecondsSinceEpoch / 1000) : null,
-        'latitude': latitude,
-        'long_name': longName,
-        'longitude': longitude,
-        'neighbors': neighbors?.map((e) => e.toJson()).toList(),
-        'node_id': nodeNum,
-        'packet_count': packetCount,
-        'precision_bits': precisionBits,
-        'precision_meters': precisionMeters,
-        'primary_channel': primaryChannel,
-        'role': roleStr,
-        'sats_in_view': satsInView,
-        'short_name': shortName,
-        'timestamp': timestamp,
-        'timestamp_str': timestampStr,
-      };
+  Map<String, dynamic> toStats() => {
+    'age_hours': ageHours,
+    'altitude': altitude,
+    'avg_snr': avgSnr,
+    'direct_neighbors': directNeighbors,
+    'display_name': displayName,
+    'hex_id': hexId,
+    'hw_model': hwModelStr,
+    'last_seen_network': lastSeenNetwork != null
+        ? (lastSeenNetwork!.millisecondsSinceEpoch / 1000)
+        : null,
+    'latitude': latitude,
+    'long_name': longName,
+    'longitude': longitude,
+    'neighbors': neighbors?.map((e) => e.toJson()).toList(),
+    'node_id': nodeNum,
+    'packet_count': packetCount,
+    'precision_bits': precisionBits,
+    'precision_meters': precisionMeters,
+    'primary_channel': primaryChannel,
+    'role': roleStr,
+    'sats_in_view': satsInView,
+    'short_name': shortName,
+    'timestamp': timestamp,
+    'timestamp_str': timestampStr,
+  };
 
   final int nodeNum;
   final String? longName;
