@@ -131,6 +131,7 @@ class NodeRepository {
 
   static Future<void> fetchLocations({
     required Function(Node) onNodeReceived,
+    bool save = false,
   }) async {
     try {
       final response = await http
@@ -152,9 +153,9 @@ class NodeRepository {
         for (final locationJson in locationsList) {
           try {
             final node = Node.fromStats(locationJson as Map<String, dynamic>);
-            await NodeRepository.add(node);
+            if (save) await NodeRepository.add(node);
             onNodeReceived(node);
-            await Future.delayed(const Duration(milliseconds: 50));
+            await Future.delayed(const Duration(milliseconds: 75));
           } catch (e) {
             debugPrint('Ошибка при обработке локации: $e');
             continue;

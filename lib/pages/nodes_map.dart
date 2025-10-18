@@ -7,6 +7,7 @@ import 'dart:async';
 
 import '../../../data/models/node.dart';
 import '../widgets/avatars.dart';
+import '../data/repo/nodes.dart';
 
 // TODO: класторизатор не правельно сумирует при больших маштабах
 
@@ -48,20 +49,37 @@ class _MapViewState extends State<MapView> {
   List<_NodeCluster> _allClusters = [];
   List<Marker> _visibleMarkers = [];
   bool _isInitialized = false;
-  
+
   Timer? _debounceTimer;
   double _lastProcessedZoom = 10;
+  int _lastNodesCount = 0;
 
   @override
   void initState() {
     super.initState();
     _mapController = MapController();
+    _lastNodesCount = widget.nodes.length;
     _initializeClusters();
+  }
+
+  @override
+  void didUpdateWidget(covariant MapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Проверяем, если список нод изменился
+    if (widget.nodes.length != _lastNodesCount) {
+      _lastNodesCount = widget.nodes.length;
+      _initializeClusters();
+    }
   }
 
   Future<void> _initializeClusters() async {
     final clusters = await _clusterNodesAsync(_currentZoom);
     if (mounted) {
+      // Устанавливаем центр на первый кластер при инициализации
+      if (clusters.isNotEmpty &&
+          (_currentCenter.latitude == 0 && _currentCenter.longitude == 0)) {
+        _currentCenter = clusters.first.center;
+      }
       setState(() {
         _allClusters = clusters;
         _isInitialized = true;
@@ -80,11 +98,13 @@ class _MapViewState extends State<MapView> {
 
   Future<List<_NodeCluster>> _clusterNodesAsync(double zoom) async {
     final validNodes = widget.nodes
-        .where((n) =>
-            n.latitude != null &&
-            n.latitude != 0 &&
-            n.longitude != null &&
-            n.longitude != 0)
+        .where(
+          (n) =>
+              n.latitude != null &&
+              n.latitude != 0 &&
+              n.longitude != null &&
+              n.longitude != 0,
+        )
         .toList();
 
     if (validNodes.isEmpty) return [];
@@ -142,13 +162,15 @@ class _MapViewState extends State<MapView> {
               mergedNodesMap[node.nodeNum] = node;
             }
             final mergedNodes = mergedNodesMap.values.toList();
-            
-            final centerLat = mergedNodes.fold<double>(
+
+            final centerLat =
+                mergedNodes.fold<double>(
                   0,
                   (sum, n) => sum + (n.latitude ?? 0),
                 ) /
                 mergedNodes.length;
-            final centerLng = mergedNodes.fold<double>(
+            final centerLng =
+                mergedNodes.fold<double>(
                   0,
                   (sum, n) => sum + (n.longitude ?? 0),
                 ) /
@@ -183,7 +205,8 @@ class _MapViewState extends State<MapView> {
 
     // Конвертируем в градусы (примерно)
     final latDelta = visibleHeightMeters / 111000;
-    final lngDelta = visibleWidthMeters /
+    final lngDelta =
+        visibleWidthMeters /
         (111000 * cos((_currentCenter.latitude * pi) / 180));
 
     return point.latitude >= _currentCenter.latitude - latDelta &&
@@ -213,23 +236,28 @@ class _MapViewState extends State<MapView> {
               children: [
                 AvatarWidget(
                   icon: node.isReceived ?? false
-                      ? Icons.satellite_alt_rounded
-                      : Icons.public,
+                      ? Icons.cell_tower
+                      : Icons.satellite_alt,
                   size: 40,
                   border: true,
                 ),
                 if (node.shortName != null || node.longName != null)
                   Flexible(
                     child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         node.shortName ?? node.longName ?? '',
-                        style: const TextStyle(fontSize: 9, color: Colors.black),
+                        style: const TextStyle(
+                          fontSize: 9,
+                          color: Colors.black,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -270,6 +298,22 @@ class _MapViewState extends State<MapView> {
     }
   }
 
+  void _onNodeReceived(Node node) {
+    setState(() {
+      // Добавляем новый узел в список
+      final existingIndex = widget.nodes.indexWhere(
+        (n) => n.nodeNum == node.nodeNum,
+      );
+      if (existingIndex != -1) {
+        widget.nodes[existingIndex] = node;
+      } else {
+        widget.nodes.add(node);
+      }
+    });
+    // Пересчитываем кластеры
+    _initializeClusters();
+  }
+
   void _onPositionChanged(MapCamera camera, bool hasGesture) {
     _currentCenter = camera.center;
     final newZoom = camera.zoom;
@@ -288,6 +332,12 @@ class _MapViewState extends State<MapView> {
     }
   }
 
+  void _centerOnFirstCluster() {
+    if (_allClusters.isNotEmpty) {
+      _mapController.move(_allClusters.first.center, 12);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isInitialized) {
@@ -301,8 +351,39 @@ class _MapViewState extends State<MapView> {
         ? _allClusters.first.center
         : const LatLng(0, 0);
 
+    final fab = FloatingActionButton(
+      heroTag: 'load',
+      onPressed: _centerOnFirstCluster,
+      child: const Icon(Icons.center_focus_strong),
+    );
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Карта узлов')),
+      floatingActionButton: fab,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            AvatarWidget(icon: Icons.cell_tower, size: 40.0),
+            const SizedBox(width: 12.0),
+            Flexible(child: const Text('Карта узлов')),
+          ],
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () =>
+                NodeRepository.fetchLocations(onNodeReceived: _onNodeReceived),
+          ),
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: () => NodeRepository.fetchLocations(
+              onNodeReceived: _onNodeReceived,
+              save: true,
+            ),
+          ),
+        ],
+      ),
       body: FlutterMap(
         mapController: _mapController,
         options: MapOptions(
