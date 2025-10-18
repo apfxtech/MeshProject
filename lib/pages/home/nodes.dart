@@ -68,7 +68,7 @@ class NodesViewState extends State<NodesView> {
   }
 
   void _setupNodeListener() {
-    NodeRepository.fetchLocations(onNodeReceived: (node) => _updateNodesList(node));
+    //NodeRepository.fetchLocations(onNodeReceived: (node) => _updateNodesList(node));
     if (_nodeSubscription != null) return;
     _nodeSubscription = widget.client.nodeStream.listen((node) async {
       final nodeModel = Node(
