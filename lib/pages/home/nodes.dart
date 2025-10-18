@@ -57,7 +57,18 @@ class NodesViewState extends State<NodesView> {
     }
   }
 
+  void _updateNodesList(Node node) {
+    final existingIndex = _nodes.indexWhere((n) => n.nodeNum == node.nodeNum);
+      if (existingIndex != -1) {
+        _nodes[existingIndex] = node;
+      } else {
+        _nodes.add(node);
+      }
+      setState(() {});
+  }
+
   void _setupNodeListener() {
+    NodeRepository.fetchLocations(onNodeReceived: (node) => _updateNodesList(node));
     if (_nodeSubscription != null) return;
     _nodeSubscription = widget.client.nodeStream.listen((node) async {
       final nodeModel = Node(
@@ -77,15 +88,10 @@ class NodesViewState extends State<NodesView> {
         channel: node.channel,
         lastHeard: node.lastHeard,
         snr: node.snr,
+        isReceived: true,
       );
       await NodeRepository.add(nodeModel);
-      final existingIndex = _nodes.indexWhere((n) => n.nodeNum == nodeModel.nodeNum);
-      if (existingIndex != -1) {
-        _nodes[existingIndex] = nodeModel;
-      } else {
-        _nodes.add(nodeModel);
-      }
-      setState(() {});
+      _updateNodesList(nodeModel);
     });
   }
 
@@ -164,10 +170,6 @@ class NodesViewState extends State<NodesView> {
             itemCount: filteredNodes.length,
             itemBuilder: (context, index) {
               final node = filteredNodes[index];
-              String avatarName = node.longName ?? 'Node ${node.nodeNum.toRadixString(16)}';
-              if (node.shortName != null && node.shortName!.isNotEmpty) {
-                avatarName += ' (${node.shortName})';
-              }
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Container(
@@ -185,7 +187,7 @@ class NodesViewState extends State<NodesView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           AvatarWidget(
-                            text: avatarName,
+                            icon: node.isReceived ?? false ? Icons.satellite_alt_rounded : Icons.public,
                             size: 48.0,
                             backgroundColor: colorScheme.secondaryContainer,
                             foregroundColor: colorScheme.onSecondaryContainer,

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:tostore/tostore.dart';
 import '../models/openai.dart';
 
-const TableSchema settingsSchema = TableSchema(
-  name: 'settings',
+const TableSchema usersSchema = TableSchema(
+  name: 'users',
   primaryKeyConfig: PrimaryKeyConfig(
     name: 'id',
     type: PrimaryKeyType.sequential,
@@ -22,7 +22,7 @@ const TableSchema settingsSchema = TableSchema(
   ],
 );
 
-class SettingsRepository {
+class UsersRepository {
   static late ToStore _db;
 
   static void init(ToStore db) {
@@ -42,4 +42,6 @@ class SettingsRepository {
     final data = OpenAI(baseUrl: baseUrl, apiKey: apiKey).toJson();
     await _db.insert('settings', data);
   }
+
+  
 }

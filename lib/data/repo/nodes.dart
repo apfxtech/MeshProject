@@ -1,6 +1,9 @@
 // lib/data/repo/nodes.dart
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:tostore/tostore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../../data/models/node.dart';
 
 const TableSchema nodesSchema = TableSchema(
@@ -48,7 +51,7 @@ class NodeRepository {
     _db = db;
   }
 
-  static Map<String, dynamic> _toDbMap(Map<String, dynamic> jsonMap) {
+  static Map<String, dynamic> _toBaseMap(Map<String, dynamic> jsonMap) {
     final dbMap = Map<String, dynamic>.from(jsonMap);
     if (dbMap['lastHeard'] != null) {
       final unixSeconds = dbMap['lastHeard'] as int;
@@ -74,7 +77,7 @@ class NodeRepository {
   }
 
   static Future<void> add(Node node) async {
-    final map = _toDbMap(node.toJson());
+    final map = _toBaseMap(node.toJson());
     final query = _db.query('nodes').where('nodeNum', '=', node.nodeNum);
     final count = await query.count();
     if (count > 0) {
@@ -85,7 +88,7 @@ class NodeRepository {
   }
 
   static Future<void> update(Node node) async {
-    final map = _toDbMap(node.toJson());
+    final map = _toBaseMap(node.toJson());
     await _db.update('nodes', map).where('nodeNum', '=', node.nodeNum);
   }
 
@@ -124,5 +127,47 @@ class NodeRepository {
               (node.shortName?.toLowerCase().contains(lowerName) ?? false),
         )
         .toList();
+  }
+
+  static Future<void> fetchLocations({
+    required Function(Node) onNodeReceived,
+  }) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('https://malla.meshworks.ru/api/locations?'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Запрос истёк'),
+          );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+        final locationsList = jsonData['locations'] as List<dynamic>?;
+
+        if (locationsList == null || locationsList.isEmpty) return;
+
+        for (final locationJson in locationsList) {
+          try {
+            final node = Node.fromStats(locationJson as Map<String, dynamic>);
+            await NodeRepository.add(node);
+            onNodeReceived(node);
+            await Future.delayed(const Duration(milliseconds: 50));
+          } catch (e) {
+            debugPrint('Ошибка при обработке локации: $e');
+            continue;
+          }
+        }
+
+        debugPrint('${locationsList.length} локаций успешно сохранено в БД');
+      } else {
+        debugPrint('Ошибка при выполнении запроса: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Ошибка при получении локаций: $e');
+      rethrow;
+    }
   }
 }

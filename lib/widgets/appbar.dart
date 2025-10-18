@@ -30,7 +30,7 @@ class AegisAppBar extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 12.0),
           Flexible(
             child: Text(
-              longName ?? 'Aegis',
+              longName ?? 'Aegis Network',
               style: const TextStyle(fontSize: 20.0),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,

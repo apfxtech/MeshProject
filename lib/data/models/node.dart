@@ -163,7 +163,7 @@ class Node {
       satsInView: parseInt(json['sats_in_view']),
       timestamp: parseDouble(json['timestamp']),
       timestampStr: json['timestamp_str'] as String?,
-      isReceived: null,
+      isReceived: false,
     );
   }
 

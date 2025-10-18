@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _initializeClient() async {
-    radio_client = MeshtasticClient();
+    radio_client = MeshtasticOneClient().get();
     try {
       await radio_client.initialize();
       if (mounted) {
@@ -97,24 +97,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           setState(() {
             _connectionStatus = status;
           });
-        }
-        if (status.state == MeshtasticConnectionState.connecting) {
-          setState(() {
-            _phase = 'connecting';
-            _currentLoadingIcon = Icons.bluetooth_searching;
-          });
-        } else if (status.state == MeshtasticConnectionState.configuring) {
-          setState(() {
-            _phase = 'configuring';
-            _currentLoadingIcon = Icons.sync;
-          });
-        } else if (status.state == MeshtasticConnectionState.connected) {
-          if (radio_client.isConfigured) {
-            setState(() {
-              _phase = null;
-              _currentLoadingIcon = null;
-            });
-          }
         }
       });
 

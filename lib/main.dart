@@ -13,7 +13,7 @@ import './pages/home/home.dart';
 import './pages/nodes_map.dart';
 import './data/repo/nodes.dart' as nodes;
 import './data/repo/chats.dart' as chats;
-import './data/repo/settings.dart' as settings;
+import 'data/repo/users.dart' as users;
 import './services/notification.dart';
 
 void main() async {
@@ -40,7 +40,7 @@ Future<void> _initAsync() async {
       nodes.nodesSchema,
       chats.chatsSchema,
       chats.messagesSchema,
-      settings.settingsSchema,
+      users.usersSchema,
     ];
     
     final db = ToStore(schemas: allSchemas);
@@ -49,8 +49,8 @@ Future<void> _initAsync() async {
     
     nodes.NodeRepository.init(db);
     chats.ChatsRepository.init(db);
-    settings.SettingsRepository.init(db);
-    
+    users.UsersRepository.init(db);
+
     await FlutterBluePlus.setLogLevel(LogLevel.none);
     await Future.delayed(Duration(seconds: 1));
   } catch (e, st) {
@@ -102,8 +102,7 @@ Future<void> _initAsync() async {
               path: '/loading',
               builder: (context, state) => Scaffold(
                 appBar: const AegisAppBar(
-                  longName: "Aegis Network",
-                  loadingIcon: Icons.sync,
+                  loadingIcon: Icons.bluetooth_disabled,
                   isLoading: true,
                 ),
                 body: const Center(
