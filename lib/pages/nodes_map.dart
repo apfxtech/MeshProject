@@ -51,8 +51,10 @@ class _MapViewState extends State<MapView> {
   bool _isInitialized = false;
 
   Timer? _debounceTimer;
+  Timer? _progressTimer;
   double _lastProcessedZoom = 10;
   int _lastNodesCount = 0;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -65,17 +67,30 @@ class _MapViewState extends State<MapView> {
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Проверяем, если список нод изменился
     if (widget.nodes.length != _lastNodesCount) {
       _lastNodesCount = widget.nodes.length;
       _initializeClusters();
     }
   }
 
+  void _showProgressBar() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    _progressTimer?.cancel();
+    _progressTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
   Future<void> _initializeClusters() async {
     final clusters = await _clusterNodesAsync(_currentZoom);
     if (mounted) {
-      // Устанавливаем центр на первый кластер при инициализации
       if (clusters.isNotEmpty &&
           (_currentCenter.latitude == 0 && _currentCenter.longitude == 0)) {
         _currentCenter = clusters.first.center;
@@ -93,6 +108,7 @@ class _MapViewState extends State<MapView> {
   void dispose() {
     _mapController.dispose();
     _debounceTimer?.cancel();
+    _progressTimer?.cancel();
     super.dispose();
   }
 
@@ -109,15 +125,12 @@ class _MapViewState extends State<MapView> {
 
     if (validNodes.isEmpty) return [];
 
-    // Радиус кластеризации в километрах - размер 2 маркеров
-    // Уменьшается с зумом для большей детализации
     final radiusKm = 50.0 / pow(2, (zoom - 5).clamp(0, 10)).toDouble();
     final radiusMeters = radiusKm * 1000;
 
     var clusters = <_NodeCluster>[];
     final processedNodes = <Node>{};
 
-    // Первая фаза: создаём кластеры для каждого ноды
     for (final node in validNodes) {
       if (processedNodes.contains(node)) continue;
 
@@ -140,7 +153,6 @@ class _MapViewState extends State<MapView> {
       processedNodes.add(node);
     }
 
-    // Вторая фаза: объединяем близкие кластеры
     var merged = true;
     while (merged) {
       merged = false;
@@ -153,7 +165,6 @@ class _MapViewState extends State<MapView> {
           );
 
           if (distance <= radiusMeters * 2) {
-            // Объединяем кластеры - используем Map по nodeNum для дедупликации
             final mergedNodesMap = <int, Node>{};
             for (final node in clusters[i].nodes) {
               mergedNodesMap[node.nodeNum] = node;
@@ -195,15 +206,12 @@ class _MapViewState extends State<MapView> {
   }
 
   bool _isWithinBounds(LatLng point) {
-    // Вычисляем видимую область с буфером
     final zoom = _currentZoom;
     final metersPerPixel = 40075000 / (256 * pow(2, zoom).toDouble());
 
-    // Примерно 800x600 пикселей видимой области + буфер
     final visibleWidthMeters = 1200 * metersPerPixel;
     final visibleHeightMeters = 1000 * metersPerPixel;
 
-    // Конвертируем в градусы (примерно)
     final latDelta = visibleHeightMeters / 111000;
     final lngDelta =
         visibleWidthMeters /
@@ -220,11 +228,9 @@ class _MapViewState extends State<MapView> {
     final colorScheme = Theme.of(context).colorScheme;
 
     for (final cluster in _allClusters) {
-      // Пропускаем маркеры за экраном
       if (!_isWithinBounds(cluster.center)) continue;
 
       if (cluster.nodes.length == 1) {
-        // Одиночный узел
         final node = cluster.nodes.first;
         markers.add(
           Marker(
@@ -268,7 +274,6 @@ class _MapViewState extends State<MapView> {
           ),
         );
       } else {
-        // Кластер
         markers.add(
           Marker(
             point: cluster.center,
@@ -300,7 +305,6 @@ class _MapViewState extends State<MapView> {
 
   void _onNodeReceived(Node node) {
     setState(() {
-      // Добавляем новый узел в список
       final existingIndex = widget.nodes.indexWhere(
         (n) => n.nodeNum == node.nodeNum,
       );
@@ -310,7 +314,6 @@ class _MapViewState extends State<MapView> {
         widget.nodes.add(node);
       }
     });
-    // Пересчитываем кластеры
     _initializeClusters();
   }
 
@@ -319,7 +322,6 @@ class _MapViewState extends State<MapView> {
     final newZoom = camera.zoom;
     _updateVisibleMarkers();
 
-    // Дебаунс пересчёта кластеризации: только если зум изменился значительно
     _debounceTimer?.cancel();
 
     if ((newZoom - _lastProcessedZoom).abs() >= 0.3) {
@@ -365,41 +367,54 @@ class _MapViewState extends State<MapView> {
           children: [
             AvatarWidget(icon: Icons.cell_tower, size: 40.0),
             const SizedBox(width: 12.0),
-            Flexible(child: const Text('Карта узлов')),
+            const Flexible(child: Text('Карта узлов')),
           ],
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.download),
-            onPressed: () =>
-                NodeRepository.fetchLocations(onNodeReceived: _onNodeReceived),
+            onPressed: () {
+              _showProgressBar();
+              NodeRepository.fetchLocations(onNodeReceived: _onNodeReceived);
+            },
           ),
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () => NodeRepository.fetchLocations(
-              onNodeReceived: _onNodeReceived,
-              save: true,
-            ),
+            onPressed: () {
+              _showProgressBar();
+              NodeRepository.fetchLocations(
+                onNodeReceived: _onNodeReceived,
+                save: true,
+              );
+            },
           ),
         ],
       ),
-      body: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          initialCenter: center,
-          initialZoom: _currentZoom,
-          minZoom: 2,
-          maxZoom: 18,
-          onPositionChanged: _onPositionChanged,
-        ),
+      body: Column(
         children: [
-          TileLayer(
-            urlTemplate:
-                'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.aegis_app',
+          if (_isLoading)
+            const LinearProgressIndicator(value: null),
+          Expanded(
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: center,
+                initialZoom: _currentZoom,
+                minZoom: 2,
+                maxZoom: 18,
+                onPositionChanged: _onPositionChanged,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.aegis_app',
+                ),
+                MarkerLayer(markers: _visibleMarkers),
+              ],
+            ),
           ),
-          MarkerLayer(markers: _visibleMarkers),
         ],
       ),
     );

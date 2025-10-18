@@ -186,7 +186,7 @@ class NodesViewState extends State<NodesView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           AvatarWidget(
-                            icon: node.isReceived ?? false ? Icons.satellite_alt_rounded : Icons.public,
+                            icon: Icons.cell_tower,
                             size: 48.0,
                             backgroundColor: colorScheme.secondaryContainer,
                             foregroundColor: colorScheme.onSecondaryContainer,
