@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; // For min function
+import 'dart:math';
 
 class AvatarWidget extends StatelessWidget {
   final String? imagePath;
@@ -8,6 +8,7 @@ class AvatarWidget extends StatelessWidget {
   final double size;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final bool border;
 
   const AvatarWidget({
     super.key,
@@ -17,6 +18,7 @@ class AvatarWidget extends StatelessWidget {
     this.size = 45.0,
     this.backgroundColor,
     this.foregroundColor,
+    this.border = false,
   });
 
   @override
@@ -28,23 +30,20 @@ class AvatarWidget extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: avatarBackgroundColor,
-            ),
-          ),
-          CircleAvatar(
-            radius: size / 2,
-            backgroundColor: Colors.transparent,
-            child: _getAvatarContent(avatarForegroundColor),
-          ),
-        ],
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: avatarBackgroundColor,
+          border: border
+              ? Border.all(
+                  color: avatarForegroundColor,
+                  width: size * 0.08,
+                )
+              : null,
+        ),
+        child: Center(
+          child: _getAvatarContent(avatarForegroundColor),
+        ),
       ),
     );
   }
@@ -63,7 +62,6 @@ class AvatarWidget extends StatelessWidget {
             imagePath!,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) {
-              //debugPrint('Image load error: $error');
               if (text != null && text!.isNotEmpty) {
                 return _buildText(foregroundColor);
               } else if (icon != null) {
@@ -88,10 +86,12 @@ class AvatarWidget extends StatelessWidget {
     final displayText = text!.toUpperCase().substring(0, min(2, text!.length));
     return Text(
       displayText,
+      textAlign: TextAlign.center,
       style: TextStyle(
         color: foregroundColor,
-        fontSize: size * 0.5,
+        fontSize: size * 0.4,
         fontWeight: FontWeight.bold,
+        height: 1.0,
       ),
     );
   }

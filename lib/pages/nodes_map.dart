@@ -8,7 +8,7 @@ import 'dart:async';
 import '../../../data/models/node.dart';
 import '../widgets/avatars.dart';
 
-// TODO: класторизатор не правельно сумирует ноды
+// TODO: класторизатор не правельно сумирует при больших маштабах
 
 class _NodeCluster {
   final LatLng center;
@@ -194,6 +194,7 @@ class _MapViewState extends State<MapView> {
 
   void _updateVisibleMarkers() {
     final markers = <Marker>[];
+    final colorScheme = Theme.of(context).colorScheme;
 
     for (final cluster in _allClusters) {
       // Пропускаем маркеры за экраном
@@ -215,6 +216,7 @@ class _MapViewState extends State<MapView> {
                       ? Icons.satellite_alt_rounded
                       : Icons.public,
                   size: 40,
+                  border: true,
                 ),
                 if (node.shortName != null || node.longName != null)
                   Flexible(
@@ -251,8 +253,9 @@ class _MapViewState extends State<MapView> {
               child: AvatarWidget(
                 text: cluster.nodes.length.toString(),
                 size: 50,
-                backgroundColor: Colors.blue.shade100,
-                foregroundColor: Colors.blue,
+                backgroundColor: colorScheme.onSecondaryContainer,
+                foregroundColor: colorScheme.secondaryContainer,
+                border: true,
               ),
             ),
           ),
@@ -270,8 +273,6 @@ class _MapViewState extends State<MapView> {
   void _onPositionChanged(MapCamera camera, bool hasGesture) {
     _currentCenter = camera.center;
     final newZoom = camera.zoom;
-
-    // Обновляем видимые маркеры при движении
     _updateVisibleMarkers();
 
     // Дебаунс пересчёта кластеризации: только если зум изменился значительно
