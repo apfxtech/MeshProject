@@ -1,4 +1,5 @@
 // lib/pages/home/chats.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../widgets/avatars.dart';
@@ -145,10 +146,15 @@ class ChatsViewState extends State<ChatsView> {
               final chat = filteredChats[index];
               bool isSelected = chat.id == widget.selectedChatId;
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? colorScheme.primaryFixedDim : colorScheme.onSurfaceVariant.withAlpha(18),
+                    color: isSelected
+                        ? colorScheme.primaryFixedDim
+                        : colorScheme.onSurfaceVariant.withAlpha(18),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: InkWell(
@@ -164,8 +170,12 @@ class ChatsViewState extends State<ChatsView> {
                           AvatarWidget(
                             text: chat.title,
                             size: 48.0,
-                            backgroundColor: isSelected ? colorScheme.primaryContainer : colorScheme.tertiaryContainer,
-                            foregroundColor: isSelected ? colorScheme.primary : colorScheme.onTertiaryContainer,
+                            backgroundColor: isSelected
+                                ? colorScheme.primaryContainer
+                                : colorScheme.tertiaryContainer,
+                            foregroundColor: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.onTertiaryContainer,
                           ),
                           const SizedBox(width: 14.0),
                           Expanded(
@@ -175,7 +185,9 @@ class ChatsViewState extends State<ChatsView> {
                                 Text(
                                   chat.title,
                                   style: TextStyle(
-                                    color: isSelected ? colorScheme.onPrimaryFixedVariant : colorScheme.onSecondaryContainer,
+                                    color: isSelected
+                                        ? colorScheme.onPrimaryFixedVariant
+                                        : colorScheme.onSecondaryContainer,
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -185,27 +197,35 @@ class ChatsViewState extends State<ChatsView> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.edit),
-                            color: isSelected ? colorScheme.onPrimaryFixedVariant : colorScheme.onTertiaryContainer,
+                            color: isSelected
+                                ? colorScheme.onPrimaryFixedVariant
+                                : colorScheme.onTertiaryContainer,
                             tooltip: 'Rename Chat',
                             onPressed: () async {
                               String? newName = await showDialog<String>(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  TextEditingController _controller = TextEditingController(text: chat.title);
+                                  TextEditingController _controller =
+                                      TextEditingController(text: chat.title);
                                   return AlertDialog(
                                     title: const Text('Переименовать чат'),
                                     content: TextField(
                                       controller: _controller,
-                                      decoration: const InputDecoration(hintText: "Новое имя"),
+                                      decoration: const InputDecoration(
+                                        hintText: "Новое имя",
+                                      ),
                                     ),
                                     actions: <Widget>[
                                       TextButton(
                                         child: const Text('Отмена'),
-                                        onPressed: () => Navigator.of(context).pop(),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                       ),
                                       TextButton(
                                         child: const Text('OK'),
-                                        onPressed: () => Navigator.of(context).pop(_controller.text),
+                                        onPressed: () => Navigator.of(
+                                          context,
+                                        ).pop(_controller.text),
                                       ),
                                     ],
                                   );
@@ -225,17 +245,24 @@ class ChatsViewState extends State<ChatsView> {
                                   system: chat.system,
                                   opening: chat.opening,
                                 );
-                                _chats[_chats.indexWhere((c) => c.id == chat.id)] = updatedChat;
+                                _chats[_chats.indexWhere(
+                                      (c) => c.id == chat.id,
+                                    )] =
+                                    updatedChat;
                                 setState(() {});
                               }
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            color: isSelected ? colorScheme.onPrimaryFixedVariant : colorScheme.onTertiaryContainer,
+                            color: isSelected
+                                ? colorScheme.onPrimaryFixedVariant
+                                : colorScheme.onTertiaryContainer,
                             tooltip: 'Delete Chat',
                             onPressed: () async {
-                              final originalIndex = _chats.indexWhere((c) => c.id == chat.id);
+                              final originalIndex = _chats.indexWhere(
+                                (c) => c.id == chat.id,
+                              );
                               await _deleteChat(chat.id, originalIndex);
                             },
                           ),
@@ -275,7 +302,8 @@ Future<void> handleIncomingMessage(
   if (!isDM && !isBroadcast) return;
 
   final senderNode = client.nodes[packet.from];
-  final senderName = senderNode?.user?.shortName ?? senderNode?.user?.longName.substring(0, 8);
+  final senderName =
+      senderNode?.user?.shortName ?? senderNode?.user?.longName.substring(0, 8);
 
   String chatSource;
   if (isBroadcast) {
@@ -298,9 +326,9 @@ Future<void> handleIncomingMessage(
   }
 
   if (chat != null) {
-    final messageContent = isBroadcast
-        ? '$senderName: ${packet.textMessage ?? ''}'
-        : packet.textMessage ?? '';
+    String pld = utf8.decode(packet.decoded!.payload);
+    final messageContent = isBroadcast ? '$senderName: ${pld}' : pld;
+
     final newMessage = Message(
       role: 'assistant',
       content: messageContent,
@@ -309,8 +337,14 @@ Future<void> handleIncomingMessage(
       date: DateTime.now(),
       hops: 0,
     );
-    await NotificationService.sendTextNotification(title: senderName.toString(), body: packet.textMessage.toString());
+
+    await NotificationService.sendTextNotification(
+      title: senderName.toString(),
+      body: packet.textMessage.toString(),
+    );
+
     await ChatsRepository.messages(chat.id).add(newMessage);
+    
     MeshtasticProvider.notifyNewMessage(chat.id);
   }
 }
