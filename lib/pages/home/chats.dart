@@ -52,7 +52,7 @@ class ChatsViewState extends State<ChatsView> {
     setState(() {});
   }
 
-  Future<void> createNewChatWithList() async {
+  Future<void> createNewChatFromContacts() async {
     final Contact? selectedContact = await showModalBottomSheet<Contact>(
       context: context,
       isScrollControlled: true,
@@ -66,7 +66,7 @@ class ChatsViewState extends State<ChatsView> {
         title: selectedContact.name,
         assistant: selectedContact.type,
         key: 'AQ==', // Default key
-        source: '', // Default source
+        source: 'C:', // Updated source prefix for Contacts
         temperature: 0.7,
         top_p: 0.9,
         max_tokens: 256,
@@ -81,7 +81,7 @@ class ChatsViewState extends State<ChatsView> {
     }
   }
 
-  Future<void> createNewChatWithCards() async {
+  Future<void> createNewChatFromCondidates() async {
     final Contact? selectedContact = await showModalBottomSheet<Contact>(
       context: context,
       isScrollControlled: true,
@@ -94,8 +94,8 @@ class ChatsViewState extends State<ChatsView> {
       Chat newChat = Chat(
         title: selectedContact.name,
         assistant: selectedContact.type,
-        key: 'AQ==', // Default key
-        source: 'o:', // Default source
+        key: 'AQ==', 
+        source: 'B:',
         temperature: 0.7,
         top_p: 0.9,
         max_tokens: 256,

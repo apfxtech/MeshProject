@@ -344,14 +344,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           children: [
             const SizedBox(height: 10),
             FloatingActionButton(
-              heroTag: 'cards',
-              onPressed: () => _chatsKey.currentState?.createNewChatWithCards(),
+              heroTag: 'condidates',
+              onPressed: () => _chatsKey.currentState?.createNewChatFromCondidates(),
               child: const Icon(Icons.view_module),
             ),
             const SizedBox(height: 10),
             FloatingActionButton(
-              heroTag: 'list',
-              onPressed: () => _chatsKey.currentState?.createNewChatWithList(),
+              heroTag: 'contacts',
+              onPressed: () => _chatsKey.currentState?.createNewChatFromContacts(),
               child: const Icon(Icons.list),
             ),
           ],
