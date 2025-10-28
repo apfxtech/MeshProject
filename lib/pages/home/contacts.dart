@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../widgets/avatars.dart';
 import '../../data/models/contact.dart';
-import '../../data/repo/ai_models.dart';
+import '../../data/repo/users.dart';
 
 class ContactsListWidget extends StatefulWidget {
   const ContactsListWidget({super.key});
@@ -22,7 +22,7 @@ class _ContactsListWidgetState extends State<ContactsListWidget> {
   }
 
   Future<void> _loadContacts() async {
-    final loadedContacts = await AiModelRepository().getAllContacts();
+    final loadedContacts = await UsersRepository.getAllContacts();
     if (mounted) {
       setState(() {
         _contacts = loadedContacts;

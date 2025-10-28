@@ -64,9 +64,9 @@ class ChatsViewState extends State<ChatsView> {
     if (selectedContact != null) {
       Chat newChat = Chat(
         title: selectedContact.name,
-        assistant: selectedContact.type,
-        key: 'AQ==', // Default key
-        source: 'C:', // Updated source prefix for Contacts
+        assistant: selectedContact.botId ?? selectedContact.name,
+        key: selectedContact.key ?? 'sk-xxx', 
+        source: 'C:${selectedContact.type}',
         temperature: 0.7,
         top_p: 0.9,
         max_tokens: 256,
@@ -93,9 +93,9 @@ class ChatsViewState extends State<ChatsView> {
     if (selectedContact != null) {
       Chat newChat = Chat(
         title: selectedContact.name,
-        assistant: selectedContact.type,
-        key: 'AQ==', 
-        source: 'B:',
+        assistant: selectedContact.botId ?? selectedContact.name,
+        key: selectedContact.key ?? 'sk-xxx', 
+        source: 'B:${selectedContact.type}',
         temperature: 0.7,
         top_p: 0.9,
         max_tokens: 256,

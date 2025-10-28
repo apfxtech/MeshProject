@@ -69,8 +69,8 @@ class _ChatViewState extends State<ChatView> {
     }).toList();
 
     LlmProvider newProvider;
-    if (chat.source.startsWith('o:')) {
-      final model = 'deepseek/deepseek-chat-v3.1:free';
+    if (chat.source.startsWith(RegExp(r'[A-Z]'))) { // "C:" "B:" большие буквы выход в интернет
+      final model = 'deepseek/deepseek-chat-v3.1';
       final apiKey = 'sk-ewl70MJkW1XLn2BYqNE9PlWuLm9gT0eY'; // Assuming chat.key holds the API key
       final baseUrl = 'https://api.proxyapi.ru/openrouter/v1'; // Hardcoded default base URL
       newProvider = OpenAIProvider(
@@ -83,7 +83,7 @@ class _ChatViewState extends State<ChatView> {
         initialHistory: hist,
         systemPrompt: chat.system,
       );
-    } else {
+    } else {  // маленькие буквы выход через сеть меш
       newProvider = MeshtasticProvider(chatId: widget.selectedChatId, client: widget.client);
       newProvider.history = hist;
     }

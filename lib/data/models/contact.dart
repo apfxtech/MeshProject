@@ -4,6 +4,7 @@ class Contact {
   final String imagePath;
   final String subtitle;
   final String? botId;
+  final String? key;
 
   const Contact({
     required this.name,
@@ -11,15 +12,16 @@ class Contact {
     required this.imagePath,
     required this.subtitle,
     this.botId,
+    this.key,
   });
 
   @override
   bool operator ==(Object other) =>
       other is Contact &&
-      name == other.name &&
       type == other.type &&
-      botId == other.botId;
+      botId == other.botId &&
+      key == other.key;
 
   @override
-  int get hashCode => name.hashCode ^ type.hashCode ^ (botId?.hashCode ?? 0);
+  int get hashCode => name.hashCode ^ type.hashCode ^ (botId?.hashCode ?? 0) ^ (key?.hashCode ?? 0);
 }
